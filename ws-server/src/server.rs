@@ -88,12 +88,14 @@ impl Server {
 
 	/// Build the server
 	pub async fn start(self, addr: impl AsRef<str>) -> anyhow::Result<()> {
+		log::debug!("start server: {:?}", addr.as_ref());
 		let addr = addr.as_ref();
 		let mut incoming = TcpListenerStream::new(TcpListener::bind(addr).await?);
 		let methods = Arc::new(self.methods);
 
 		while let Some(socket) = incoming.next().await {
 			if let Ok(socket) = socket {
+				log::debug!("server addr: {:?}", socket.local_addr());
 				socket.set_nodelay(true).unwrap();
 
 				let methods = methods.clone();
